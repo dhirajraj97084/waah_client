@@ -34,7 +34,7 @@ const OffersSection = () => {
     autoplay: true,
     autoplaySpeed: 2500,
     speed: 800,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
     responsive: [
@@ -58,17 +58,28 @@ const OffersSection = () => {
       <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6">
         <Slider {...settings}>
           {offers.map((offer) => (
-            <a
-              key={offer.id}
-              href={offer.link}
-              className="px-2 block focus:outline-none"
-            >
-              <img
-                src={offer.image}
-                alt={`Offer ${offer.id}`}
-                className="w-full h-40 sm:h-56 lg:h-64 object-cover rounded-xl shadow-md"
-              />
-            </a>
+          <a
+  key={offer.id}
+  href={offer.link}
+  className="px-2 block focus:outline-none"
+>
+  <div className="relative w-full h-40 sm:h-56 lg:h-64 rounded-xl shadow-md overflow-hidden">
+    {/* Blurred background */}
+    <img
+      src={offer.image}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover blur-lg scale-110"
+    />
+    {/* Actual image (content not cut) */}
+    <img
+      src={offer.image}
+      alt={`Offer ${offer.id}`}
+      className="relative z-10 h-full mx-auto object-contain"
+    />
+  </div>
+</a>
+
+
           ))}
         </Slider>
       </div>

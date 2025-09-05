@@ -1,68 +1,62 @@
-import { Link } from 'react-router-dom';
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Youtube, 
-  Mail, 
-  Phone, 
+import { Link } from "react-router-dom";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+  Mail,
+  Phone,
   MapPin,
   CreditCard,
   Truck,
   Shield,
-  RotateCcw
-} from 'lucide-react';
+  RotateCcw,
+} from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Press', href: '/press' },
-      { name: 'Blog', href: '/blog' },
+      { name: "About Us", href: "/about" },
+      { name: "Careers", href: "/careers" },
+      { name: "Press", href: "/press" },
+      { name: "Blog", href: "/blog" },
     ],
     support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Shipping Info', href: '/shipping' },
-      { name: 'Returns', href: '/returns' },
+      { name: "Help Center", href: "/help" },
+      { name: "Contact Us", href: "/contact" },
+      { name: "Shipping Info", href: "/shipping" },
+      { name: "Returns", href: "/returns" },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'Accessibility', href: '/accessibility' },
-    ],
-    categories: [
-      { name: 'Electronics', href: '/products?category=electronics' },
-      { name: 'Fashion', href: '/products?category=fashion' },
-      { name: 'Home & Garden', href: '/products?category=home' },
-      { name: 'Sports', href: '/products?category=sports' },
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Accessibility", href: "/accessibility" },
     ],
   };
 
   const features = [
     {
       icon: <Truck className="w-6 h-6" />,
-      title: 'Free Shipping',
-      description: 'On orders over $50'
+      title: "Free Shipping",
+      description: "On orders over $50",
     },
     {
       icon: <RotateCcw className="w-6 h-6" />,
-      title: 'Easy Returns',
-      description: '30-day return policy'
+      title: "Easy Returns",
+      description: "30-day return policy",
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: 'Secure Payment',
-      description: '100% secure checkout'
+      title: "Secure Payment",
+      description: "100% secure checkout",
     },
     {
       icon: <CreditCard className="w-6 h-6" />,
-      title: 'Multiple Payment',
-      description: 'Credit card, PayPal, etc.'
+      title: "Multiple Payment",
+      description: "Credit card, PayPal, etc.",
     },
   ];
 
@@ -71,12 +65,13 @@ const Footer = () => {
       {/* Features Section */}
       <div className="bg-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center sm:text-left">
             {features.map((feature, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <div className="text-blue-400">
-                  {feature.icon}
-                </div>
+              <div
+                key={index}
+                className="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-3"
+              >
+                <div className="text-blue-400 mb-2 sm:mb-0">{feature.icon}</div>
                 <div>
                   <h3 className="font-semibold text-sm">{feature.title}</h3>
                   <p className="text-gray-400 text-xs">{feature.description}</p>
@@ -95,22 +90,23 @@ const Footer = () => {
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 rounded-lg overflow-hidden">
-                  <img 
-                    src="/images/logo.jpg" 
-                    alt="WAAH PVT. LTD." 
+                  <img
+                    src="/images/logo.jpg"
+                    alt="WAAH PVT. LTD."
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <span className="text-xl font-bold">WAAH PVT. LTD.</span>
               </div>
               <p className="text-gray-400 mb-6 max-w-md">
-                Your one-stop destination for quality products at unbeatable prices. 
-                We're committed to providing the best shopping experience with fast 
-                shipping, easy returns, and excellent customer service.
+                Your one-stop destination for quality products at unbeatable
+                prices. We're committed to providing the best shopping
+                experience with fast shipping, easy returns, and excellent
+                customer service.
               </p>
-              
+
               {/* Contact Info */}
-              <div className="space-y-3">
+              <div className="space-y-3 text-sm">
                 <div className="flex items-center space-x-3 text-gray-400">
                   <Mail className="w-5 h-5" />
                   <span>support@shophub.com</span>
@@ -129,7 +125,7 @@ const Footer = () => {
             {/* Company Links */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-sm">
                 {footerLinks.company.map((link) => (
                   <li key={link.name}>
                     <Link
@@ -146,7 +142,7 @@ const Footer = () => {
             {/* Support Links */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Support</h3>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-sm">
                 {footerLinks.support.map((link) => (
                   <li key={link.name}>
                     <Link
@@ -163,7 +159,7 @@ const Footer = () => {
             {/* Legal Links */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-sm">
                 {footerLinks.legal.map((link) => (
                   <li key={link.name}>
                     <Link
@@ -183,10 +179,12 @@ const Footer = () => {
       {/* Newsletter Signup */}
       <div className="bg-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
               <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
-              <p className="text-gray-400">Subscribe to our newsletter for the latest deals and updates.</p>
+              <p className="text-gray-400 text-sm">
+                Subscribe to our newsletter for the latest deals and updates.
+              </p>
             </div>
             <div className="flex w-full md:w-auto">
               <input
@@ -194,7 +192,7 @@ const Footer = () => {
                 placeholder="Enter your email"
                 className="flex-1 md:w-64 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
               />
-              <button className="px-6 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors">
                 Subscribe
               </button>
             </div>
@@ -205,13 +203,13 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-gray-800 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="text-gray-400 text-sm mb-4 md:mb-0">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-gray-400 text-sm text-center md:text-left">
               © {currentYear} ShopHub. All rights reserved.
             </div>
-            
+
             {/* Social Links */}
-            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+            <div className="flex items-center justify-center space-x-4">
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -243,7 +241,7 @@ const Footer = () => {
             </div>
 
             {/* Payment Methods */}
-            <div className="flex items-center space-x-2 text-gray-400 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-gray-400 text-sm">
               <span>We accept:</span>
               <div className="flex items-center space-x-1">
                 <CreditCard className="w-4 h-4" />
