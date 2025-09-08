@@ -2,6 +2,27 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Async thunks for product operations
+export const fetchAdminProducts = createAsyncThunk(
+  'products/fetchAdminProducts',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const { page = 1, limit = 10, category, isActive } = params;
+      const queryParams = new URLSearchParams();
+      if (page) queryParams.append('page', page);
+      if (limit) queryParams.append('limit', limit);
+      if (category) queryParams.append('category', category);
+      if (typeof isActive !== 'undefined') queryParams.append('isActive', isActive);
+
+      const response = await axios.get(`/api/admin/products?${queryParams}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch admin products');
+    }
+  }
+);
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (params = {}, { rejectWithValue }) => {
@@ -141,6 +162,26 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Admin Products
+      .addCase(fetchAdminProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAdminProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = action.payload.products;
+        state.pagination = {
+          currentPage: action.payload.page,
+          totalPages: action.payload.pages,
+          totalProducts: action.payload.total,
+          hasNext: action.payload.page < action.payload.pages,
+          hasPrev: action.payload.page > 1,
+        };
+      })
+      .addCase(fetchAdminProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       // Fetch Products
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;

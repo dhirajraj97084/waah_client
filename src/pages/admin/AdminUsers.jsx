@@ -1,55 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Users, Search, Filter, Eye, Edit, Trash2 } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchAdminUsers, updateAdminUser, deleteAdminUser } from '../../store/slices/adminSlice';
+import toast from 'react-hot-toast';
 
 const AdminUsers = () => {
-  const [users] = useState([
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'Customer',
-      status: 'Active',
-      joinDate: '2024-01-15',
-      orders: 5
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'Customer',
-      status: 'Active',
-      joinDate: '2024-01-10',
-      orders: 12
-    },
-    {
-      id: '3',
-      name: 'Bob Johnson',
-      email: 'bob@example.com',
-      role: 'Admin',
-      status: 'Active',
-      joinDate: '2024-01-05',
-      orders: 0
-    },
-    {
-      id: '4',
-      name: 'Alice Brown',
-      email: 'alice@example.com',
-      role: 'Customer',
-      status: 'Inactive',
-      joinDate: '2024-01-01',
-      orders: 2
-    }
-  ]);
+  const dispatch = useAppDispatch();
+  const { users, loading, error } = useAppSelector((s) => s.admin);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
+  useEffect(() => {
+    dispatch(fetchAdminUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = !selectedRole || user.role === selectedRole;
-    const matchesStatus = !selectedStatus || user.status === selectedStatus;
+    const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = !selectedRole || user.role === selectedRole.toLowerCase();
+    const matchesStatus = !selectedStatus || (user.isActive ? 'Active' : 'Inactive') === selectedStatus;
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -60,9 +35,27 @@ const AdminUsers = () => {
   };
 
   const getRoleColor = (role) => {
-    return role === 'Admin' 
+    return role?.toLowerCase() === 'admin' 
       ? 'bg-purple-100 text-purple-800' 
       : 'bg-blue-100 text-blue-800';
+  };
+
+  const handleToggleActive = async (user) => {
+    try {
+      await dispatch(updateAdminUser({ id: user._id, data: { isActive: !user.isActive } })).unwrap();
+      toast.success('User updated');
+    } catch (e) {
+      toast.error(typeof e === 'string' ? e : 'Failed to update user');
+    }
+  };
+
+  const handleDelete = async (user) => {
+    try {
+      await dispatch(deleteAdminUser(user._id)).unwrap();
+      toast.success('User deactivated');
+    } catch (e) {
+      toast.error(typeof e === 'string' ? e : 'Failed to deactivate user');
+    }
   };
 
   return (
@@ -146,7 +139,7 @@ const AdminUsers = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
+                  <tr key={user._id || user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -164,25 +157,25 @@ const AdminUsers = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(user.status)}`}>
-                        {user.status}
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(user.isActive ? 'Active' : 'Inactive')}`}>
+                        {user.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{user.joinDate}</span>
+                      <span className="text-sm text-gray-900">{new Date(user.createdAt).toLocaleDateString()}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{user.orders}</span>
+                      <span className="text-sm text-gray-900">{user.orders ?? 0}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button className="text-blue-600 hover:text-blue-900">
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="text-green-600 hover:text-green-900">
+                        <button onClick={() => handleToggleActive(user)} className="text-green-600 hover:text-green-900">
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900">
+                        <button onClick={() => handleDelete(user)} className="text-red-600 hover:text-red-900">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -195,12 +188,15 @@ const AdminUsers = () => {
         </div>
 
         {/* Empty State */}
-        {filteredUsers.length === 0 && (
+        {filteredUsers.length === 0 && !loading && (
           <div className="text-center py-12">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
             <p className="text-gray-600 mb-6">Try adjusting your search or filter criteria.</p>
           </div>
+        )}
+        {loading && (
+          <div className="text-center py-12 text-gray-600">Loading...</div>
         )}
       </div>
     </div>

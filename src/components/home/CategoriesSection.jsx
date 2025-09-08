@@ -76,7 +76,7 @@ const CategoriesSection = ({ categories = [] }) => {
           {displayCategories.map((category) => (
             <Link
               key={category._id}
-              to={category.href || `/products?category=${category._id}`}
+              to={category.href || `/category/${category.slug || category._id}`}
               className="
                 flex-shrink-0 w-40 sm:w-full 
                 bg-white rounded-lg shadow-sm hover:shadow-md 

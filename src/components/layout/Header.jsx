@@ -21,6 +21,7 @@ import {
   Shield,
   Star
 } from 'lucide-react';
+import { fetchCategories } from '../../store/slices/productSlice';
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -55,14 +56,18 @@ const Header = () => {
     }
   };
 
-  const categories = [
-    { name: 'Electronics', icon: '📱', href: '/electronics' },
-    { name: 'Fashion', icon: '👕', href: '/fashion' },
-    { name: 'Home & Garden', icon: '🏠', href: '/home-garden' },
-    { name: 'Sports', icon: '⚽', href: '/sports' },
-    { name: 'Books', icon: '📚', href: '/products?category=books' },
-    { name: 'Beauty', icon: '💄', href: '/products?category=beauty' },
-  ];
+  const { categories: categoriesResponse } = useAppSelector((s) => s.products);
+  useEffect(() => { dispatch(fetchCategories()); }, [dispatch]);
+  const categories = Array.isArray(categoriesResponse?.categories) && categoriesResponse.categories.length > 0
+    ? categoriesResponse.categories.map((c) => ({ name: c.name, icon: c.icon || '🏷️', href: `/category/${c.slug}` }))
+    : [
+        { name: 'Electronics', icon: '📱', href: '/category/electronics' },
+        { name: 'Fashion', icon: '👕', href: '/category/fashion' },
+        { name: 'Home & Garden', icon: '🏠', href: '/category/home' },
+        { name: 'Sports', icon: '⚽', href: '/category/sports' },
+        { name: 'Books', icon: '📚', href: '/category/books' },
+        { name: 'Beauty', icon: '💄', href: '/category/beauty' },
+      ];
 
   return (
     <>
@@ -165,7 +170,7 @@ const Header = () => {
           </div>
 
           {/* Categories - Desktop */}
-          <div className="hidden md:flex border-t border-gray-200 py-2 space-x-4">
+          <div className="hidden md:flex border-t border-gray-200 py-2 space-x-4 overflow-x-auto scrollbar-hide">
             <div className="relative">
               <button onClick={() => setShowCategories(!showCategories)} className="flex items-center space-x-1 text-gray-700 hover:text-blue-600">
                 <Menu className="w-5 h-5" />
@@ -184,7 +189,7 @@ const Header = () => {
               )}
             </div>
             {categories.map(cat => (
-              <Link key={cat.name} to={cat.href} className="text-gray-700 hover:text-blue-600">{cat.name}</Link>
+              <Link key={cat.name} to={cat.href} className="text-gray-700 hover:text-blue-600 whitespace-nowrap">{cat.name}</Link>
             ))}
           </div>
         </div>
@@ -200,6 +205,14 @@ const Header = () => {
             <Link to="/cart" className="text-gray-700 hover:text-blue-600">Cart</Link>
             <Link to="/wishlist" className="text-gray-700 hover:text-blue-600">Wishlist</Link>
             <Link to="/profile" className="text-gray-700 hover:text-blue-600">Profile</Link>
+            <div className="pt-2 border-t">
+              <div className="text-sm text-gray-500 mb-2">Categories</div>
+              <div className="grid grid-cols-2 gap-2">
+                {categories.map(cat => (
+                  <Link key={cat.name} to={cat.href} className="text-gray-700 hover:text-blue-600" onClick={()=>dispatch(toggleMobileMenu())}>{cat.name}</Link>
+                ))}
+              </div>
+            </div>
             {!isAuthenticated && (
               <>
                 <Link to="/login" className="text-gray-700 hover:text-blue-600">Login</Link>

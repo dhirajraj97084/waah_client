@@ -8,6 +8,7 @@ import MobileMenu from './MobileMenu';
 import CartSidebar from '../cart/CartSidebar';
 import WishlistSidebar from '../wishlist/WishlistSidebar';
 import SearchModal from '../search/SearchModal';
+import OffersTicker from './OffersTicker';
 
 const Layout = ({ children }) => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <OffersTicker />
       <Header />
       
       <main className="flex-1">

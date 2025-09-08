@@ -1,53 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Eye, Package, Search, Filter } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchAllOrders, updateOrderStatus } from '../../store/slices/orderSlice';
+import toast from 'react-hot-toast';
 
 const AdminOrders = () => {
-  const [orders] = useState([
-    {
-      id: 'ORD-001',
-      customer: 'John Doe',
-      email: 'john@example.com',
-      total: 299.99,
-      status: 'Completed',
-      date: '2024-01-15',
-      items: 3
-    },
-    {
-      id: 'ORD-002',
-      customer: 'Jane Smith',
-      email: 'jane@example.com',
-      total: 149.99,
-      status: 'Processing',
-      date: '2024-01-14',
-      items: 1
-    },
-    {
-      id: 'ORD-003',
-      customer: 'Bob Johnson',
-      email: 'bob@example.com',
-      total: 79.99,
-      status: 'Shipped',
-      date: '2024-01-13',
-      items: 2
-    },
-    {
-      id: 'ORD-004',
-      customer: 'Alice Brown',
-      email: 'alice@example.com',
-      total: 199.99,
-      status: 'Pending',
-      date: '2024-01-12',
-      items: 1
-    }
-  ]);
+  const dispatch = useAppDispatch();
+  const { orders, loading, error } = useAppSelector((s) => s.orders);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
+  useEffect(() => {
+    dispatch(fetchAllOrders());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !selectedStatus || order.status === selectedStatus;
+    const matchesSearch = order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order._id?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !selectedStatus || order.orderStatus === selectedStatus;
     return matchesSearch && matchesStatus;
   });
 
@@ -65,6 +40,15 @@ const AdminOrders = () => {
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleStatusChange = async (orderId, status) => {
+    try {
+      await dispatch(updateOrderStatus({ orderId, status })).unwrap();
+      toast.success('Order status updated');
+    } catch (e) {
+      toast.error(typeof e === 'string' ? e : 'Failed to update status');
     }
   };
 
@@ -144,36 +128,49 @@ const AdminOrders = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
+                  <tr key={order._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                           <Package className="w-5 h-5 text-blue-600" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{order.id}</div>
+                          <div className="text-sm font-medium text-gray-900">{order._id}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{order.customer}</div>
-                        <div className="text-sm text-gray-500">{order.email}</div>
+                        <div className="text-sm font-medium text-gray-900">{order.user?.name}</div>
+                        <div className="text-sm text-gray-500">{order.user?.email}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{order.date}</span>
+                      <span className="text-sm text-gray-900">{new Date(order.createdAt).toLocaleDateString()}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{order.items}</span>
+                      <span className="text-sm text-gray-900">{order.orderItems?.length ?? 0}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">${order.total}</span>
+                      <span className="text-sm font-medium text-gray-900">${order.totalPrice}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.orderStatus)}`}>
+                          {order.orderStatus}
+                        </span>
+                        <select
+                          className="text-xs border rounded px-2 py-1"
+                          value={order.orderStatus}
+                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900">
@@ -188,12 +185,15 @@ const AdminOrders = () => {
         </div>
 
         {/* Empty State */}
-        {filteredOrders.length === 0 && (
+        {filteredOrders.length === 0 && !loading && (
           <div className="text-center py-12">
             <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
             <p className="text-gray-600 mb-6">Try adjusting your search or filter criteria.</p>
           </div>
+        )}
+        {loading && (
+          <div className="text-center py-12 text-gray-600">Loading...</div>
         )}
       </div>
     </div>

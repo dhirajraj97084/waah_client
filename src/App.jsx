@@ -21,9 +21,11 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminOffers from "./pages/admin/AdminOffers";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/auth/AdminRoute";
 import NotFoundPage from "./pages/NotFoundPage";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
               <Route path="/fashion" element={<FashionPage />} />
               <Route path="/home-garden" element={<HomeGardenPage />} />
               <Route path="/sports" element={<SportsPage />} />
+              <Route path="/category/:slug" element={<CategoryPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
@@ -84,6 +87,11 @@ function App() {
               <Route path="/admin/users" element={
                 <AdminRoute>
                   <AdminUsers />
+                </AdminRoute>
+              } />
+              <Route path="/admin/offers" element={
+                <AdminRoute>
+                  <AdminOffers />
                 </AdminRoute>
               } />
               
