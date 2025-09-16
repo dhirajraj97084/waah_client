@@ -90,19 +90,27 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
 
-            {/* Logo */}
-<Link to="/" className="flex items-center space-x-2 flex-shrink-0">
-  <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 shadow-md">
+{/* Logo */}
+<Link 
+  to="/" 
+  className="flex items-center gap-2 flex-shrink-0"
+>
+  {/* Logo Icon Box */}
+  <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-yellow-400 shadow-lg">
     <img 
       src="/images/logo.jpg" 
       alt="WAAH PVT. LTD." 
-      className="w-8 h-8 object-contain"
+      className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
     />
   </div>
-  <span className="hidden sm:block text-xl md:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
-    WAAH PVT. LTD.
+
+  {/* Company Name */}
+  <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-gray-800">
+    <span className="text-blue-600">WAAH</span> 
+    <span className="hidden sm:inline"> PVT. LTD.</span>
   </span>
 </Link>
+
 
             {/* Search Bar - Desktop */}
             <div className="hidden md:flex flex-1 max-w-2xl mx-4">
